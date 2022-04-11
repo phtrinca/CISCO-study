@@ -1,0 +1,61 @@
+enable
+configure terminal
+hostname SP
+interface serial 0/0/0
+ip address 100.100.100.2 255.255.255.252
+no shutdown
+exit
+interface loopback 1
+ip address 192.168.0.1 255.255.255.0
+interface loopback 2
+ip address 192.168.1.1 255.255.255.0
+exit
+router eigrp 100
+network 192.168.0.0
+network 192.168.1.0
+network 100.100.100.0 255.255.255.252
+no auto
+passive-interface loopback 1
+passive-interface loopback 2
+exit
+key chain cisco
+key 1
+key-string cisco
+exit
+exit
+interface serial 0/3/0
+ip authentication mode eigrp 100 md5
+ip authentication key-chain eigrp 100 cisco
+end
+wr
+
+enable 
+configure terminal
+hostname Cloud
+interface serial 0/3/0
+ip address 100.100.100.1 255.255.255.252
+bandwidth 150000
+clock rate 64000
+Description Connect SP
+no shutdown
+exit
+interface loopback 100
+ip address 172.16.1.1 255.255.255.0
+bandwidth 150000
+exit
+router eigrp 100
+network 172.16.1.0 255.255.255.0
+network 100.100.100.0 255.255.255.252
+no auto
+exit
+key chain cisco
+key 1
+key-string cisco
+exit
+exit
+interface serial 0/3/1
+ip authentication mode eigrp 100 md5
+ip authentication key-chain eigrp 100 cisco
+end
+wr
+
